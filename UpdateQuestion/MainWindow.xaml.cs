@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace UpdateQuestion
 {
@@ -39,9 +40,13 @@ namespace UpdateQuestion
                 return;
             if (wb.Url.ToString() == "http://jiakao.cloudtimesoft.com/questions")
             {
-                return;
+                opennew();
             }
-            //clickcount++;
+            else if (wb.Url.ToString().Contains("edit"))
+            {
+                create_record();
+            }
+            clickcount++;
 
             HtmlElement url = wb.Document.GetElementById("login_login") as HtmlElement;
             if (url != null)
@@ -56,10 +61,50 @@ namespace UpdateQuestion
             }
             else
             {
-
+                if (clickcount < 3)
+                {
                     wb.Navigate(new Uri("http://jiakao.cloudtimesoft.com/questions"));
-                
+                }
             }
         }
+
+
+        private void opennew()
+        {
+            HtmlElementCollection a = wb.Document.GetElementsByTagName("a") as HtmlElementCollection;
+            foreach(HtmlElement newbtn in a)
+            {
+                if (newbtn.GetAttribute("className").Equals("btn btn-w-m btn-success mylink pull-right"))
+                {
+                    newbtn.InvokeMember("Click");
+                }
+            }
+
+
+
+
+            //HtmlElement url = wb.Document.GetElementById("login_login") as HtmlElement;
+            //if (url != null)
+            //{
+            //    url.SetAttribute("value", "admin");
+            //    wb.Document.GetElementById("login_password").SetAttribute("value", "admin");
+            //    HtmlElementCollection btnAdd = wb.Document.GetElementsByTagName("button") as HtmlElementCollection;
+            //    if (btnAdd[0].OuterText == "登 录")
+            //    {
+            //        btnAdd[0].InvokeMember("Click");
+            //    }
+            //}
+        }
+
+
+        private void create_record()
+        {
+            wb.Document.GetElementById("question_questionname").SetAttribute("value", "控件值");
+            wb.Document.GetElementById("driverlicensetype").SetAttribute("value", "C1");
+            System.Windows.Clipboard.SetText("asdf");
+            wb.Document.GetElementById("question_questionimage").InvokeMember("Click");
+
+        }
+
     }
 }
